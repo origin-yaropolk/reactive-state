@@ -1,0 +1,25 @@
+{
+
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "node",
+			"name": "Tests",
+			"request": "launch",
+			"env": {
+				"NODE_OPTIONS": "--experimental-vm-modules"
+			},
+			"args": [
+				"${workspaceRoot}/node_modules/jest/bin/jest",
+				"--runInBand",
+				"--no-coverage",
+				"-c",
+				"${workspaceFolder}/src/jest.config.mjs",
+				"--watchAll=false",
+			],
+			"cwd": "${workspaceFolder}/src",
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen"
+		}
+	]
+}
