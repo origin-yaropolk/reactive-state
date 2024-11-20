@@ -6,10 +6,10 @@ export default {
 	// Indicates whether the coverage information should be collected while executing the test
 	collectCoverage: true,
 
-	collectCoverageFrom: ['**/*.mts'],
+	collectCoverageFrom: ['**/*.ts'],
 
 	coveragePathIgnorePatterns: [
-		'src/reactive-state.mts',
+		'src/reactive-state.ts',
 	],
 
 	// The directory where Jest should output its coverage files

@@ -8,13 +8,13 @@ export default {
 	// The number of seconds after which a test is considered as slow and reported as such in the results.
 	slowTestThreshold: 10,
 
-	extensionsToTreatAsEsm: ['.mts'],
+	extensionsToTreatAsEsm: ['.ts'],
 	resolver: '<rootDir>/../tools/mjs-resolver.cjs',
-	moduleFileExtensions: ['js', 'mjs', 'mts'],
-	testRegex: ['.*.spec.mts'],
+	moduleFileExtensions: ['ts', 'js', 'mjs', 'mts'],
+	testRegex: ['.*.spec.ts'],
 	transform: {
 		// to process mts with `ts-jest`
-		'^.+\\.mts$': [
+		'^.+\\.ts$': [
 			'ts-jest',
 			{
 				useESM: true,

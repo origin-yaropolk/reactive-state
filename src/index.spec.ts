@@ -1,7 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { makeReactiveState } from './index.mjs';
-import { assert, type PropertyExists, type Expect } from './generic-test-utils.mjs';
+import { makeReactiveState } from './index.js';
+import { assert, type PropertyExists, type Expect } from './generic-test-utils.js';
 import { beforeEach } from '@jest/globals';
 import { Observable } from 'rxjs';
 
