@@ -1,9 +1,8 @@
-import { describe, expect, it } from '@jest/globals';
-
-import { makeReactiveState } from './index.js';
-import { assert, type PropertyExists, type Expect } from './generic-test-utils.js';
-import { beforeEach } from '@jest/globals';
+import { beforeEach, describe, expect, it } from '@jest/globals';
 import { Observable } from 'rxjs';
+
+import { assert, type Expect, type PropertyExists } from './generic-test-utils.js';
+import { makeReactiveState } from './index.js';
 
 interface TestStateInterface {
 	value: number;
@@ -30,10 +29,10 @@ describe('Main tests', () => {
 	let reactiveState: ReturnType<typeof makeReactiveState<TestStateInterface>>;
 	const initialState: TestStateInterface = {
 		value: 1,
-		name: "initial",
+		name: 'initial',
 		nested: {
-			value: 2
-		}
+			value: 2,
+		},
 	};
 
 	beforeEach(() => {
@@ -44,7 +43,7 @@ describe('Main tests', () => {
 		reactiveState.setName('test');
 		reactiveState.setValue(2);
 		reactiveState.setNested({
-			value: 3
+			value: 3,
 		});
 
 		expect(reactiveState.getName()).not.toEqual(initialState.name);
@@ -57,7 +56,7 @@ describe('Main tests', () => {
 		reactiveState.setName('test');
 		reactiveState.setValue(2);
 		reactiveState.setNested({
-			value: 3
+			value: 3,
 		});
 
 		expect(reactiveState.getName()).toEqual(reactiveState.state.name);
@@ -69,7 +68,7 @@ describe('Main tests', () => {
 		let firedName = '';
 		let firedValue = 0;
 		let firedNested = {
-			value: 0
+			value: 0,
 		}
 
 		reactiveState.nameChanged.subscribe(value => {
@@ -91,7 +90,7 @@ describe('Main tests', () => {
 		reactiveState.setName('test');
 		reactiveState.setValue(2);
 		reactiveState.setNested({
-			value: 3
+			value: 3,
 		});
 
 		expect(firedName).toEqual(reactiveState.getName());
@@ -106,8 +105,8 @@ describe('Main tests', () => {
 			name: '',
 			value: 0,
 			nested: {
-				value: 1
-			}
+				value: 1,
+			},
 		}
 
 		let counter = 0;
@@ -121,7 +120,7 @@ describe('Main tests', () => {
 		reactiveState.setName('test');
 		reactiveState.setValue(2);
 		reactiveState.setNested({
-			value: 3
+			value: 3,
 		});
 
 		await awaiter;
@@ -130,8 +129,8 @@ describe('Main tests', () => {
 			name: 'test',
 			value: 2,
 			nested: {
-				value: 3
-			}
+				value: 3,
+			},
 		});
 
 		expect(counter).toEqual(1);
@@ -145,14 +144,14 @@ describe('Main tests', () => {
 			name: '',
 			value: 0,
 			nested: {
-				value: 1
-			}
+				value: 1,
+			},
 		};
 
 		reactiveState.setName('test');
 		reactiveState.setValue(2);
 		reactiveState.setNested({
-			value: 3
+			value: 3,
 		});
 
 		expect(reactiveState.state).not.toEqual(initialState);

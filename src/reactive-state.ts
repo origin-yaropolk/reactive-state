@@ -1,4 +1,4 @@
-import { BehaviorSubject, debounceTime, type Observable } from "rxjs";
+import { BehaviorSubject, debounceTime, type Observable } from 'rxjs';
 
 type ExcludeFunctions<T> = {
 	[K in keyof T] :
@@ -156,10 +156,11 @@ class ProxyHandler<T> {
 
 					subject.next(arg[0]);
 					this_.stateSource.next(this_.state);
+					return;
 				}
 
-				return;
-			}
+				throw new Error(`Trying for ${propertyKey}: cant apply proxy`);
+			},
 		});
 
 		this.properties[propertyKey] = propProxy;

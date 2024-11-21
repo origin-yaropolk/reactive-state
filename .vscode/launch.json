@@ -14,7 +14,7 @@
 				"--runInBand",
 				"--no-coverage",
 				"-c",
-				"${workspaceFolder}/src/jest.config.mjs",
+				"${workspaceFolder}/src/jest.config.js",
 				"--watchAll=false",
 			],
 			"cwd": "${workspaceFolder}/src",
