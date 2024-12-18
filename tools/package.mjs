@@ -1,5 +1,5 @@
 
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, copyFileSync } from 'fs';
 import { join } from 'path';
 
 import { exit } from 'process';
@@ -20,7 +20,7 @@ function getArgs() {
 
 function generatePackage() {
 	const packageMetadata = (version, dependencies) => ({
-		name: 'reactive-state',
+		name: '@origin-yaropolk/reactive-state',
 		version,
 		author: 'origin-yaropolk',
 		description: 'Makes state reactive',
@@ -30,7 +30,7 @@ function generatePackage() {
 			type: 'git',
 			url: 'https://github.com/origin-yaropolk/reactive-state',
 		},
-		exports: './index.mjs',
+		exports: './index.js',
 		dependencies,
 	});
 
@@ -42,6 +42,8 @@ function generatePackage() {
 function main() {
 	try {
 		generatePackage();
+		copyFileSync(join(getArgs().root, 'LICENSE'), join(getArgs().output, 'LICENSE'));
+		copyFileSync(join(getArgs().root, 'README.md'), join(getArgs().output, 'README.md'));
 		console.log('Successful compiled.');
 	} catch (err) {
 		console.error('FAIL:');
