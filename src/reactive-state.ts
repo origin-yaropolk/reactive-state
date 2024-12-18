@@ -150,7 +150,7 @@ class ProxyHandler<T> {
 				}
 
 				if (propertyKey.startsWith('set')) {
-					if (!arg[0]) {
+					if (arg[0] === undefined) {
 						throw new Error(`Trying for ${propertyKey}: arg is null or undefined`);
 					}
 
