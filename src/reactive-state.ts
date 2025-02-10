@@ -1,5 +1,7 @@
 import { BehaviorSubject, debounceTime, type Observable } from 'rxjs';
 
+const promiseMethods = new Set(['then', 'catch', 'finnaly']);
+
 type ExcludeFunctions<T> = {
 	[K in keyof T] :
 		T[K] extends (...args: unknown[]) => unknown ? never :
@@ -171,6 +173,10 @@ class ProxyHandler<T> {
 	}
 
 	get(context: PropertiesHandler<T>, propertyKey: string | keyof PropertiesHandler<T>): unknown {
+		if (promiseMethods.has(propertyKey)) {
+			return undefined;
+		}
+
 		if (context.disposed) {
 			throw new Error(`Trying for ${propertyKey}: reactive state disposed`);
 		}
