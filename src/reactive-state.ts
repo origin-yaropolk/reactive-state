@@ -46,6 +46,43 @@ type Wrapper<T> =
 
 type ReactiveState<T> = Wrapper<WithoutMethods<T>>;
 
+type KeyType = 'setter' | 'getter' | 'observable' | 'unknown';
+
+interface Key {
+	name: string,
+	type: KeyType,
+}
+
+type SubjectWithAccessor<T> = [
+	subject: BehaviorSubject<T[Extract<keyof T, string>]> | null,
+	key: Key
+];
+
+function keyBySetterOrGetter(property: string): Key | null {
+	if (!property.startsWith('set') && !property.startsWith('get')) {
+		return null;
+	}
+
+	const type = property.startsWith('set') ? 'setter' : 'getter';
+	const prop = property.slice(3);
+
+	return {
+		name: prop.charAt(0).toLowerCase() + prop.slice(1),
+		type
+	}
+}
+
+function keyByObservable(property: string): Key | null {
+	if (!property.endsWith('Changed')) {
+		return null;
+	}
+
+	return {
+		name: property.slice(0, property.lastIndexOf('Changed')),
+		type: 'observable'
+	};
+}
+
 class PropertiesHandler<T> {
 	disposed: boolean = false;
 	state: T;
@@ -97,19 +134,36 @@ class PropertiesHandler<T> {
 }
 
 class ProxyHandler<T> {
-	private readonly properties: Record<string, unknown> = {};
+	private readonly propertiesCache: Record<string, unknown> = {};
 
-	static getKey(propertyKey: string): string {
-		if (propertyKey === 'stateChanded') {
-			return propertyKey;
+	private static getSubjectWithAccessor<T>(context: PropertiesHandler<T>, propertyKey: string | keyof PropertiesHandler<T>): SubjectWithAccessor<T> {
+		let key = keyBySetterOrGetter(propertyKey);
+
+		if (key !== null) {
+			const subject = context.subjects[key.name];
+
+			if (subject) {
+				return [subject, key];
+			}
 		}
 
-		if (propertyKey.endsWith('Changed')) {
-			return propertyKey.slice(0, propertyKey.indexOf('Changed'));
+		key = keyByObservable(propertyKey);
+
+		if (key !== null) {
+			const subject = context.subjects[key.name];
+
+			if (subject) {
+				return [subject, key];
+			}
 		}
 
-		const prop = propertyKey.slice(3);
-		return prop.charAt(0).toLowerCase() + prop.slice(1);
+		return [
+			null,
+			{
+				name: propertyKey,
+				type: 'unknown'
+			}
+		];
 	}
 
 	static isProperty<T extends object>(propertyKey: string, context: T): propertyKey is keyof PropertiesHandler<T> {
@@ -125,31 +179,33 @@ class ProxyHandler<T> {
 			return context[propertyKey];
 		}
 
-		const key = ProxyHandler.getKey(propertyKey);
-
-		if (propertyKey.endsWith('Changed')) {
-			return context.subjects[key];
-		}
-
-		const propertyProxy = this.properties[propertyKey];
+		const propertyProxy = this.propertiesCache[propertyKey];
 
 		if (propertyProxy) {
 			return propertyProxy;
 		}
 
+		const [subject, key] = ProxyHandler.getSubjectWithAccessor(context, propertyKey);
+
+		if (!subject || key.type === 'unknown') {
+			throw Error(`Trying for ${propertyKey}: subject is null or undefined`);
+		}
+
+		if (key.type === 'observable') {
+			return subject;
+		}
+
 		const propProxy = new Proxy(() => {}, {
 			apply(_target: unknown, this_: PropertiesHandler<T>, arg: T[Extract<keyof T, string>][]): unknown {
-				const subject = this_.subjects[key]
-
 				if (!subject) {
-					throw new Error(`Trying for ${propertyKey}: subject "${key}" is null or undefined`);
+					throw new Error(`Trying for ${propertyKey}: subject is null or undefined`);
 				}
 
-				if (propertyKey.startsWith('get')) {
+				if (key.type === 'getter') {
 					return subject.value;
 				}
 
-				if (propertyKey.startsWith('set')) {
+				if (key.type === 'setter') {
 					if (arg[0] === undefined) {
 						throw new Error(`Trying for ${propertyKey}: arg is null or undefined`);
 					}
@@ -160,10 +216,10 @@ class ProxyHandler<T> {
 				}
 
 				throw new Error(`Trying for ${propertyKey}: cant apply proxy`);
-			},
+			}
 		});
 
-		this.properties[propertyKey] = propProxy;
+		this.propertiesCache[propertyKey] = propProxy;
 
 		return propProxy;
 	}

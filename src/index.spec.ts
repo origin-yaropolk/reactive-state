@@ -176,6 +176,28 @@ describe('Main tests', () => {
 		expect(() => reactiveState.getName()).toThrow();
 	});
 
+	it('Should not have name conflicts', () => {
+		interface TestStateInterface {
+			enabledChanged: boolean
+		}
+
+		const initialState: TestStateInterface = {
+			enabledChanged: false
+		};
+
+		let actual = initialState;
+
+		const reactiveState = makeReactiveState(initialState);
+
+		reactiveState.enabledChangedChanged.subscribe(value => {
+			actual.enabledChanged = value;
+		});
+
+		reactiveState.setEnabledChanged(true);
+
+		expect(actual.enabledChanged).toEqual(true);
+	});
+
 	it('Type check', () => {
 		type ReactiveState = ReturnType<typeof makeReactiveState<TestStateInterface>>;
 
