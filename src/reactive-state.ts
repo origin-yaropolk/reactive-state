@@ -1,4 +1,4 @@
-import { BehaviorSubject, debounceTime, type Observable } from 'rxjs';
+import { BehaviorSubject, debounceTime, Subject, type Observable } from 'rxjs';
 
 const promiseMethods = new Set(['then', 'catch', 'finnaly']);
 
@@ -24,8 +24,8 @@ type ToSetters<T> = {
 	[K in keyof T]: (value: T[K]) => void;
 }
 
-type ToObservables<T> = {
-	[K in keyof T]: Observable<T[K]>;
+type ToSubjects<T> = {
+	[K in keyof T]: Subject<T[K]>;
 }
 
 type WithoutMethods<T> = {
@@ -39,14 +39,14 @@ type MakeReadonly<T> = {
 type Wrapper<T> =
 	ToGetters<PrefixAll<T, 'get'>> &
 	ToSetters<PrefixAll<T, 'set'>> &
-	ToObservables<PostfixAll<T, 'Changed'>> & {
+	ToSubjects<PostfixAll<T, 'Changed'>> & {
 		stateChanged: Observable<T>;
 		readonly state: MakeReadonly<T>;
 		reset(): void;
 		dispose(): void;
 	};
 
-type ReactiveState<T> = Wrapper<WithoutMethods<T>>;
+export type ReactiveState<T> = Wrapper<WithoutMethods<T>>;
 
 type KeyType = 'setter' | 'getter' | 'observable' | 'unknown';
 

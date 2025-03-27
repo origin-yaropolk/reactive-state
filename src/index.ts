@@ -1,1 +1,1 @@
-export { makeReactiveState } from './reactive-state.js';
+export { makeReactiveState, type ReactiveState } from './reactive-state.js';
